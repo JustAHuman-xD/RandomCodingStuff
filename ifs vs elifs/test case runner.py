@@ -19,18 +19,16 @@ time_ended = 0
 time_delta = 0
 
 def average(x):
-    assert len(x) > 0
     return float(sum(x)) / len(x)
 
 def pearson_def(x, y):
-    assert len(x) == len(y)
     n = len(x)
-    assert n > 0
     avg_x = average(x)
     avg_y = average(y)
     diffprod = 0
     xdiff2 = 0
     ydiff2 = 0
+    
     for idx in range(n):
         xdiff = x[idx] - avg_x
         ydiff = y[idx] - avg_y
@@ -42,8 +40,8 @@ def pearson_def(x, y):
 
 def testSequenceElseIfs(case):
     global elif_checks_total, elif_count
-    checks = 0
     
+    checks = 0
     for i in range(len(case)):
         current_state = case[i]
         checks += 1
@@ -74,12 +72,12 @@ def testSequenceElseIfs(case):
         
 def testSequenceIfs(case):
     global states, if_checks_total, if_count
-    checks = 0
     
     i = 0
+    checks = 0
     while i < len(case):
-        current_state = case[i]
         checks += 1
+        current_state = case[i]
         if current_state == "G":
             break
         
