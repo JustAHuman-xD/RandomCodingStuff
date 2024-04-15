@@ -11,7 +11,7 @@ name_remaps = {}
 
 # The functions
 
-def findRemap(name):
+def find_remap(name):
     if name in valid_names:
         return None
     
@@ -29,7 +29,7 @@ def rename_dir(name, path):
     if not os.path.isdir(path):
         return
     
-    match = findRemap(name)
+    match = find_remap(name)
     if match != None:
         new_name = name.replace(match, name_remaps[match])
         new_path = path.replace(name, new_name)
@@ -47,7 +47,7 @@ def load_model(name, path):
         return
     
     no_extension = name[:name.rfind(".")]
-    match = findRemap(no_extension)
+    match = find_remap(no_extension)
     if match != None:
         new_name = name.replace(match, name_remaps[match])
         new_path = path.replace(name, new_name)
@@ -68,7 +68,7 @@ def load_texture(name, path):
         return
     
     no_extension = name[:name.rfind(".")]
-    match = findRemap(no_extension)
+    match = find_remap(no_extension)
     if match != None:
         new_name = name.replace(match, name_remaps[match])
         new_path = path.replace(name, new_name)
@@ -78,8 +78,8 @@ def load_texture(name, path):
 with open(models_path, "r") as models_file:
     models = yaml.safe_load(models_file)
     for item in models:
-        loaded_models[models[item]] = item
-        valid_names.append(item)
+        loaded_models[models[item]] = item.lower()
+        valid_names.append(item.lower())
 
 # Go through every category
 for addon_name in os.listdir(addons_directory):
@@ -109,7 +109,7 @@ for addon_name in os.listdir(addons_directory):
             for item in config_object["items"]:
                 item_body = config_object["items"][item]
                 model_id = item_body["resource"]["model_id"]
-                mapped_name = loaded_models[model_id].lower()
+                mapped_name = loaded_models[model_id]
                 if mapped_name != item and model_id in loaded_models:
                     old_model = item_body["resource"]["model_path"]
                     new_model = old_model.replace(item, mapped_name)
