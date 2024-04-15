@@ -5,16 +5,25 @@ import yaml
 models_path = "Resourcepack/item-models.yml"
 addons_directory = "Resourcepack/contents/"
 
+valid_names = []
 loaded_models = {}
 name_remaps = {}
 
 # The functions
 
 def findRemap(name):
+    if name in valid_names:
+        return None
+    
+    weight = 0
+    match = None
     for key in name_remaps:
         if key in name:
-            return key
-    return None
+            new_weight = len(key)
+            if new_weight > weight:
+                weight = new_weight
+                match = key
+    return match
 
 def rename_dir(name, path):
     if not os.path.isdir(path):
@@ -70,6 +79,7 @@ with open(models_path, "r") as models_file:
     models = yaml.safe_load(models_file)
     for item in models:
         loaded_models[models[item]] = item
+        valid_names.append(item)
 
 # Go through every category
 for addon_name in os.listdir(addons_directory):
