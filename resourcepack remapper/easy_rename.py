@@ -10,40 +10,59 @@ name_remaps = {}
 
 # The functions
 
+def findRemap(name):
+    for key in name_remaps:
+        if key in name:
+            return key
+    return None
+
+def rename_dir(name, path):
+    if not os.path.isdir(path):
+        return
+    
+    match = findRemap(name)
+    if match != None:
+        new_name = name.replace(match, name_remaps[match])
+        new_path = path.replace(name, new_name)
+        os.rename(path, new_path)
+        name = new_name
+        path = new_path
+    
+    for file_name in os.listdir(path):
+        rename_dir(file_name, path + "/" + file_name)
+
 def load_model(name, path):
-    no_extension = name[:name.rfind(".")]
-    extension = name[name.rfind("."):]
     if os.path.isdir(path):
         for file_name in os.listdir(path):
             load_model(file_name, path + "/" + file_name)
         return
     
-    if no_extension in name_remaps:
-        new_name = name_remaps[no_extension]
-        new_path = path[:path.rfind("/") + 1] + new_name + extension
+    no_extension = name[:name.rfind(".")]
+    match = findRemap(no_extension)
+    if match != None:
+        new_name = name.replace(match, name_remaps[match])
+        new_path = path.replace(name, new_name)
         os.rename(path, new_path)
         # then rename any references in the file
-        new_model = {}
+        lines = []
         with open(new_path, "r") as file:
-            model = json.load(file)
-            model_str = json.dumps(model)
-            new_model_str = model_str.replace(no_extension, new_name)
-            new_model = json.loads(new_model_str)
+            for line in file:
+                lines.append(line.replace(match, name_remaps[match]))
         
         with open(new_path, "w") as file:
-            json.dump(new_model, file, indent=2)
+            file.writelines(lines)
             
 def load_texture(name, path):
-    no_extension = name[:name.rfind(".")]
-    extension = name[name.rfind("."):]
     if os.path.isdir(path):
         for file_name in os.listdir(path):
             load_texture(file_name, path + "/" + file_name)
         return
     
-    if no_extension in name_remaps:
-        new_name = name_remaps[no_extension]
-        new_path = path[:path.rfind("/") + 1] + new_name + extension
+    no_extension = name[:name.rfind(".")]
+    match = findRemap(no_extension)
+    if match != None:
+        new_name = name.replace(match, name_remaps[match])
+        new_path = path.replace(name, new_name)
         os.rename(path, new_path)
 
 # Map all the models to ids
@@ -83,7 +102,7 @@ for addon_name in os.listdir(addons_directory):
                 mapped_name = loaded_models[model_id].lower()
                 if mapped_name != item and model_id in loaded_models:
                     old_model = item_body["resource"]["model_path"]
-                    new_model = old_model[:old_model.rfind("/") + 1] + mapped_name
+                    new_model = old_model.replace(item, mapped_name)
                     item_body["resource"]["model_path"] = new_model
                     new_config_object["items"][mapped_name] = item_body
                     name_remaps[item] = mapped_name
@@ -104,7 +123,14 @@ for addon_name in os.listdir(addons_directory):
                 lines.append(key + " \"" + value + "\"\n")
         with open(config_path, "w") as config:
             config.writelines(lines)
-        
+    
+    # Then rename any directories
+    for file_name in os.listdir(models):
+        rename_dir(file_name, models + file_name)
+    
+    for file_name in os.listdir(textures):
+        rename_dir(file_name, textures + file_name)
+    
     # Then rename and remap all model files
     for file_name in os.listdir(models):
         load_model(file_name, models + file_name)
