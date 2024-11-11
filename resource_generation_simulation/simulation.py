@@ -1,5 +1,6 @@
 import math
 import random
+import time
 
 machines = {}
 simulations = {}
@@ -34,6 +35,7 @@ print()
 print("Simulating 0.00%",end="")
 
 progress = 0.00
+startTime = time.time()
 updateInterval = max(1, math.floor(endTicks / 10000))
 while (ticks < endTicks):
     for machineName, machine in machines.items():
@@ -46,6 +48,8 @@ while (ticks < endTicks):
         print(f"\rSimulating {progress}%    ",end="")
     ticks += 1
 
+endTime = time.time()
+
 print("\rSimulating 100.00%     \n")
 print("########################################")
 print(f"Simulation of {hours} Hour(s) Completed:")
@@ -53,4 +57,5 @@ for machineName, simulated in simulations.items():
     print(f"    {machineName}:")
     for resource, amount in simulated.items():
         print(f"        {resource}: {round(amount / hours, 2)} / hr")
+print(f"Took {round(endTime - startTime, 3)} s")
 print("########################################")
