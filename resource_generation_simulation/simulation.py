@@ -43,10 +43,10 @@ while (ticks < endTicks):
         simulations[machineName][resource] += machine["amounts"][machine["outputs"].index(resource)]
     if ticks % updateInterval == 0:
         progress = round(ticks / endTicks * 100, 2)
-        print(f"\rSimulating {progress}%", end="")
+        print(f"\rSimulating {progress}%    ",end="")
     ticks += 1
 
-print("\rSimulating 100.00%\n")
+print("\rSimulating 100.00%     \n")
 print("########################################")
 print(f"Simulation of {hours} Hour(s) Completed:")
 for machineName, simulated in simulations.items():
