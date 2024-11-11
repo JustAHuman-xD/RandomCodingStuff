@@ -1,53 +1,56 @@
-import time
+import math
 import random
 
 machines = {}
-outputs = {}
+simulations = {}
 endTime = 0
-sfTicks = int(input("How many sf ticks per second on your sever (def 2): "))
+sfTicks = int(input("(def 2) SF Tps: "))
 ticks = 0
-hours = float(input("How many hours should be simulated (decimals allowed): "))
-endTicks = hours * 60 * 60 * sfTicks
+hours = float(input("Hours to Simulate: "))
+endTicks = math.floor(hours * 60 * 60 * sfTicks)
 
-for i in range(int(input("How many machines are you simulating: "))):
-    machineName = input(f"What's the name of Machine {i + 1}: ")
+for i in range(int(input("# of Simulated Machines: "))):
+    machineName = input(f"Machine {i + 1} Name: ")
     machine = {}
-    machine["interval"] = int(input("How many ticks per generation attempt: "))
-    machine["chance"] = float(input("What's the decimal chance to succeed (use 1 if every attempt): "))
-    resources = []
+    machine["interval"] = int(input("Generation Interval: "))
+    machine["chance"] = float(input("Generation Chance %: "))
+    outputs = []
     amounts = []
-    chances = []
-    output = {}
-    for j in range(int(input(f"How many types of resources are made by {machineName}: "))):
-        name = input(f"What's the name of resource {j + 1}: ")
-        resources.append(name)
-        amounts.append(int(input(f"How many {name} are generated: ")))
-        chances.append(float(input(f"What's the decimal chance of generating {name}: ")))
-        output[name] = 0
-    machine["resources"] = resources
+    weights = []
+    simulated = {}
+    for j in range(int(input(f"{machineName} # of Outputs: "))):
+        name = input(f"Output {j + 1} Name: ")
+        outputs.append(name)
+        amounts.append(int(input(f"{name}'s Amount:")))
+        weights.append(float(input(f"{name}'a Weight: ")))
+        simulated[name] = 0
+    machine["outputs"] = outputs
     machine["amounts"] = amounts
-    machine["chances"] = chances
+    machine["weights"] = weights
     machines[machineName] = machine
-    outputs[machineName] = output
+    simulations[machineName] = simulated
 
-print("Simulating")
-time.sleep(0.3)
-print(".")
-time.sleep(0.3)
-print("..")
-time.sleep(0.3)
-print("...")
+print()
+print("Simulating 0.00%",end="")
 
+progress = 0.00
+updateInterval = max(1, math.floor(endTicks / 10000))
 while (ticks < endTicks):
     for machineName, machine in machines.items():
-        if not ticks % machine["interval"] == 0 or random.randint(1, 100) > machine["chance"] * 100:
+        if not ticks % machine["interval"] == 0 or random.randint(1, 100) > machine["chance"]:
             continue
-        resource = random.choices(machine["resources"], weights=machine["chances"],k=1)[0]
-        outputs[machineName][resource] += machine["amounts"][machine["resources"].index(resource)]
+        resource = random.choices(machine["outputs"], weights=machine["weights"],k=1)[0]
+        simulations[machineName][resource] += machine["amounts"][machine["outputs"].index(resource)]
+    if ticks % updateInterval == 0:
+        progress = round(ticks / endTicks * 100, 2)
+        print(f"\rSimulating {progress}%", end="")
     ticks += 1
 
+print("\rSimulating 100.00%\n")
+print("########################################")
 print(f"Simulation of {hours} Hour(s) Completed:")
-for machineName, output in outputs.items():
+for machineName, simulated in simulations.items():
     print(f"    {machineName}:")
-    for resource, amount in output.items():
+    for resource, amount in simulated.items():
         print(f"        {resource}: {round(amount / hours, 2)} / hr")
+print("########################################")
