@@ -64,7 +64,7 @@ def estimate_lightning_position(base_stations):
     if (not intersections):
         return None
     
-    clusters = cluster_intersections(intersections, .5)
+    clusters = cluster_intersections(intersections, .25)
     cluster = max(clusters, key=len)
 
     avg_x = sum(p[0] for p in cluster) / len(cluster)
@@ -81,6 +81,7 @@ ticking = True
 strikeTime = time + random.randint(400, 600)
 hasStriken = False
 bestEstimate = None
+estimateStrikeTime = 0
 lightningRadius = 0
 debug = False
 
@@ -132,6 +133,7 @@ trackingStation = random.choice(baseStations)
 # Setup Permanent Visuals
 c.create_text(0, 0, text="Time: ", fill="white", anchor="nw")
 c.create_text(0, 15, text="Time of strike: " + str(round(strikeTime, 1)), fill="white", anchor="nw")
+c.create_text(0, 30, text="(E)Time of strike: ", fill="white", anchor="nw")
 
 while ticking:
     # Clear canvas
@@ -146,8 +148,9 @@ while ticking:
             hasStriken = True
         lightningRadius += speed * time_step
 
-    # Render time text
+    # Render time & estimate text
     c.create_text(35, 0, text=str(round(time, 1)), fill="white", anchor="nw", tags="temp")
+    c.create_text(90, 30, text=str(round(estimateStrikeTime, 1)), fill="white", anchor="nw", tags="temp")
 
     # Render lightning
     if (hasStriken and not reverseBroadcast):
@@ -190,6 +193,7 @@ while ticking:
     if (estimate != None):
         if (bestEstimate == None or estimate[0] >= bestEstimate[0]):
             bestEstimate = estimate
+            estimateStrikeTime = firstBaseStationHit.timeHit - Distance(firstBaseStationHit.coordinates, (bestEstimate[1], bestEstimate[2]))
         Circle(bestEstimate[1], bestEstimate[2], 5, "cyan", "")
     
     # Update window
