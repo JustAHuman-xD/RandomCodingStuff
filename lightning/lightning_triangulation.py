@@ -188,17 +188,17 @@ while ticking:
                     baseStation.shouldBroadcast = True
                     baseStation.increaseRadius = True
     
-    # Estimate Lightning Position
-    estimate = estimate_lightning_position(baseStations)
-    if (estimate != None):
-        if (bestEstimate == None or estimate[0] >= bestEstimate[0]):
-            bestEstimate = estimate
-            estimateStrikeTime = firstBaseStationHit.timeHit - Distance(firstBaseStationHit.coordinates, (bestEstimate[1], bestEstimate[2]))
-        Circle(bestEstimate[1], bestEstimate[2], 5, "cyan", "")
+        # Estimate Lightning Position
+        estimate = estimate_lightning_position(baseStations)
+        if (estimate != None):
+            if (bestEstimate == None or estimate[0] >= bestEstimate[0]):
+                bestEstimate = estimate
+                estimateStrikeTime = firstBaseStationHit.timeHit - Distance(firstBaseStationHit.coordinates, (bestEstimate[1], bestEstimate[2]))
+            Circle(bestEstimate[1], bestEstimate[2], 5, "cyan", "")
 
-    # End if estimate matches
-    if (bestEstimate and Distance(lightningPosition, (bestEstimate[1], bestEstimate[2])) <= .25):
-        ticking = False
+        # End if estimate matches
+        if (bestEstimate and Distance(lightningPosition, (bestEstimate[1], bestEstimate[2])) <= .25):
+            ticking = False
     
     # Update window
     window.update()
