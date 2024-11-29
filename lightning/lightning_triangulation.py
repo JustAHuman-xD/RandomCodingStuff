@@ -122,7 +122,7 @@ class BaseStation:
         return self.collided
 
 # Base stations
-baseStationCount = 5
+baseStationCount = 3
 baseStations = []
 
 for i in range(baseStationCount):
@@ -195,6 +195,14 @@ while ticking:
             bestEstimate = estimate
             estimateStrikeTime = firstBaseStationHit.timeHit - Distance(firstBaseStationHit.coordinates, (bestEstimate[1], bestEstimate[2]))
         Circle(bestEstimate[1], bestEstimate[2], 5, "cyan", "")
+
+    # End if estimate matches
+    if (bestEstimate and Distance(lightningPosition, (bestEstimate[1], bestEstimate[2])) <= .25):
+        ticking = False
     
     # Update window
+    window.update()
+
+while not ticking:
+    c.delete("")
     window.update()
