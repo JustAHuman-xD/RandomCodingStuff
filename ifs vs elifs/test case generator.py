@@ -52,7 +52,7 @@ allow_duplicates = None
 json_file = None
 cases = []
 
-with open("test_cases.json", "r") as file:
+with open("ifs vs elifs/test_cases.json", "r") as file:
     json_file = json.load(file)
     
 case_set_id = input("Input Case Set Id: ").lower().replace(" ", "_")
@@ -75,7 +75,7 @@ while cases_made < cases_to_create and case_attempts < max_case_attempts:
 time_ended = time.time()
 time_delta = round(time_ended - time_started, 3)
 
-with open("test_cases.json", "w") as file:
+with open("ifs vs elifs/test_cases.json", "w") as file:
     json_file[case_set_id] = {}
     json_file[case_set_id]["name"] = case_set_name
     json_file[case_set_id]["cases"] = cases

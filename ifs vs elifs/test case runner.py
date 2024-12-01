@@ -142,7 +142,7 @@ def reset_variables():
     time_ended = 0
     time_delta = 0
 
-with open("test_cases.json", "r") as file:
+with open("ifs vs elifs/test_cases.json", "r") as file:
     print("")
     json_file = json.load(file)
     for id in json_file:
